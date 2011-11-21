@@ -125,6 +125,34 @@
 				<provider_id></provider_id>
 				<model>saferpay/postfinance</model>
 			</saferpay_postfinance>
+			<saferpay_billpayrechnungskauf translate="title" module="saferpay">
+				<active>0</active>
+				<title>Billpay Rechnungskauf</title>
+				<allowspecific>0</allowspecific>
+				<provider_id></provider_id>
+				<model>saferpay/billpayrechnungskauf</model>
+			</saferpay_billpayrechnungskauf>
+			<saferpay_billpaylastschrift translate="title" module="saferpay">
+				<active>0</active>
+				<title>Billpay Lastschrift</title>
+				<allowspecific>0</allowspecific>
+				<provider_id></provider_id>
+				<model>saferpay/billpaylastschrift</model>
+			</saferpay_billpaylastschrift>
+			<saferpay_mpass translate="title" module="saferpay">
+				<active>0</active>
+				<title>mpass</title>
+				<allowspecific>0</allowspecific>
+				<provider_id></provider_id>
+				<model>saferpay/mpass</model>
+			</saferpay_mpass>
+			<saferpay_clickandbuy translate="title" module="saferpay">
+				<active>0</active>
+				<title>ClickandBuy</title>
+				<allowspecific>0</allowspecific>
+				<provider_id></provider_id>
+				<model>saferpay/clickandbuy</model>
+			</saferpay_clickandbuy>
 		</payment>
 		<saferpay>
 			<settings>
