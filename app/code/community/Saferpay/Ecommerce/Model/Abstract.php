@@ -261,6 +261,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 			'PROVIDERSET'           => $this->getProviderId(),
 			'LANGID'                => $this->getLangId(),
 			'SHOWLANGUAGES'         => $this->getUseDefaultLangId() ? 'yes' : 'no',
+			'VTCONFIG'				=> $this->getConfigData('vtconfig'),
 			/*
 			'BODYCOLOR'             => '',
 			'HEADCOLOR'             => '',
