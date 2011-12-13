@@ -67,7 +67,7 @@
 						<back_url translate="label comment">
 							<label>Back URL</label>
 							<frontend_type>text</frontend_type>
-							<sort_order>30</sort_order>
+							<sort_order>40</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
@@ -75,7 +75,7 @@
 						<fail_url translate="label comment">
 							<label>Fail URL</label>
 							<frontend_type>text</frontend_type>
-							<sort_order>30</sort_order>
+							<sort_order>50</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
@@ -83,11 +83,20 @@
 						<notify_url translate="label comment">
 							<label>Notify URL</label>
 							<frontend_type>text</frontend_type>
-							<sort_order>30</sort_order>
+							<sort_order>60</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</notify_url>
+						<vtconfig translate="label comment">
+							<label>VTCONFIG</label>
+							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>70</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</vtconfig>						
 					</fields>
 				</settings>
 			</groups>
@@ -127,15 +136,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -198,15 +198,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -269,15 +260,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -340,15 +322,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -411,15 +384,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -482,15 +446,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -553,15 +508,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -624,15 +570,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -695,15 +632,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -766,15 +694,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -837,15 +756,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -908,15 +818,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</provider_id>
-						<vtconfig translate="label comment">
-							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>35</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</vtconfig>						
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
