@@ -189,7 +189,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		$url = $this->_appendQueryParams($url, $this->getPayInitFields());
 		Mage::log($this->getPayInitFields());
 		Mage::log($url);
-		$result = trim(file_get_contents($url));
+		$result = trim(Mage::helper('saferpay')->process_url($url));
 		Mage::log('redirect to url: ' . urldecode($result));
 		return $result;
 	}
@@ -331,7 +331,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		{
 			$langIds = false;
 			$url = Mage::helper('saferpay')->getSetting('language_ids_url');
-			if ($langIds = new SimpleXMLElement(file_get_contents($url)))
+			if ($langIds = new SimpleXMLElement(Mage::helper('saferpay')->process_url($url)))
 			{
 				$this->setLangIdsXml($langIds);
 			}
@@ -391,7 +391,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
 		$url = $this->_appendQueryParams($url, $params);
-		$response = trim(file_get_contents($url));
+		$response = trim(Mage::helper('saferpay')->process_url($url));
 		list($status, $params) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{
