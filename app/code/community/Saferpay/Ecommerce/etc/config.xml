@@ -42,6 +42,16 @@
 				<class>Saferpay_Ecommerce_Helper</class>
 			</saferpay>
 		</helpers>
+		<resources>
+			<ecommerce_setup>
+				<setup>
+					<module>Saferpay_Ecommerce</module>
+				</setup>
+				<connection>
+                    <use>core_setup</use>
+                </connection>
+			</ecommerce_setup>
+		</resources>
 	</global>
 	<frontend>
 		<routers>

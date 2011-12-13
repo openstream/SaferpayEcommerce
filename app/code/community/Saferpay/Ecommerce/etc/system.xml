@@ -56,6 +56,38 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</saferpay_password>
+						<success_url translate="label comment">
+							<label>Success URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</success_url>
+						<back_url translate="label comment">
+							<label>Back URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</back_url>
+						<fail_url translate="label comment">
+							<label>Fail URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</fail_url>
+						<notify_url translate="label comment">
+							<label>Notify URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</notify_url>
 					</fields>
 				</settings>
 			</groups>
