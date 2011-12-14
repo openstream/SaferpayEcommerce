@@ -23,35 +23,62 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 {
 	protected $_payment;
 
-	public function successAction()
-	{
-		Mage::log(__METHOD__);
-		$this->_processResponse();
+	public function successAction(){
+		try{
+			$this->verifySignature($this->getRequest()->getParam('DATA', ''), $this->getRequest()->getParam('SIGNATURE', ''));
+			$this->_redirect('checkout/onepage/success');
+		}catch (Mage_Core_Exception $e){
+			Mage::logException($e);
+			Mage::helper('checkout')->sendPaymentFailedEmail($this->_getSession()->getQuote(), $e->getMessage());
+			$this->_getSession()->addError($e->getMessage());
+			$this->_redirect('checkout/cart');
+		}catch (Exception $e){
+			Mage::logException($e);
+			Mage::helper('checkout')->sendPaymentFailedEmail(
+				$this->_getSession()->getQuote(),
+				Mage::helper('saferpay')->__("An error occures while processing the payment: %s", print_r($e, 1))
+			);
+			$this->_getSession()->addError(
+				Mage::helper('saferpay')->__('An error occured while processing the payment, please contact the store owner for assistance.')
+			);
+			$this->_redirect('checkout/cart');
+		}
 	}
 
-	public function notifyAction()
-	{
-		Mage::log(__METHOD__);
-        /*
-         * Only log result of notification?
-         */
+	public function notifyAction(){
+		try{
+			$this->verifySignature($this->getRequest()->getParam('DATA', ''), $this->getRequest()->getParam('SIGNATURE', ''));
+			$order = Mage::getModel('sales/order');
+			$order->loadByIncrementId($this->getRequest()->getParam('id', ''));
+			$payment = $order->getPayment();
+			$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
+			if ($this->getRequest()->getParam('capture', '')){
+				if (!$order->canInvoice()) {
+					Mage::throwException($this->__('Can not create an invoice.'));
+				}
+				$invoice = $order->prepareInvoice();
+				$invoice->register()->capture();
+				$order->addRelatedObject($invoice);
+				$order->sendNewOrderEmail()
+					  ->setEmailSent(true)
+					  ->save();
+			}
+		}catch (Mage_Core_Exception $e){
+			Mage::logException($e);
+		}catch (Exception $e){
+			Mage::logException($e);
+		}	
 	}
 
-	public function backAction()
-	{
-		Mage::log(__METHOD__);
+	public function backAction(){
         $this->_abortPayment('canceled');
 	}
 
-	public function failAction()
-	{
-		Mage::log(__METHOD__);
+	public function failAction(){
         $this->_abortPayment('failed');
 	}
 
-	public function _abortPayment($status)
-	{
-		Mage::log(__METHOD__);
+	public function _abortPayment($status){
 		try
 		{
 			$this->_getPayment()->abortPayment($status);
@@ -75,83 +102,49 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 		$this->_redirect('checkout/cart');
 	}
 
-	protected function _processResponse()
+
+	/**
+	 * Verify a signature from the saferpay gateway response
+	 *
+	 * @param string $data
+	 * @param string $sig
+	 * @return Saferpay_Business_Model_Abstract
+	 */
+	public function verifySignature($data, $sig)
 	{
-		Mage::log(__METHOD__);
-		try
-		{
-			$this->_verifySignature();
-//			$method = $this->_getPayment();
-//			$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
-
-            /*
-             * Switch case according to response
-             */
-
-			$this->_executePayment();
-			return;
-		}
-		catch (Mage_Core_Exception $e)
-		{
-			Mage::logException($e);
-			Mage::helper('checkout')->sendPaymentFailedEmail($this->_getSession()->getQuote(), $e->getMessage());
-			$this->_getSession()->addError($e->getMessage());
-		}
-		catch (Exception $e)
-		{
-			Mage::logException($e);
-			Mage::helper('checkout')->sendPaymentFailedEmail(
-				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay')->__("An error occures while processing the payment: %s", print_r($e, 1))
-			);
-			$this->_getSession()->addError(
-				Mage::helper('saferpay')->__('An error occured while processing the payment, please contact the store owner for assistance.')
-			);
-		}
-		$this->_redirect('checkout/cart');
-	}
-
-	protected function _verifySignature()
-	{
-		$this->_getPayment()->verifySignature(
-			$this->getRequest()->getParam('DATA', ''),
-			$this->getRequest()->getParam('SIGNATURE', '')
+		$params = array(
+			'DATA' => $data,
+			'SIGNATURE' => $sig
 		);
+		$url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
+		$response = trim(Mage::helper('saferpay')->process_url($url, $params));
+		list($status, $params) = $this->_splitResponseData($response);
+		if ($status != 'OK')
+		{
+			$this->_throwException('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response);
+		}
 		return $this;
 	}
 
-	protected function _executePayment()
+	/**
+	 * Seperate the result status and the xml in the response
+	 *
+	 * @param string $response
+	 * @return array
+	 */
+	protected function _splitResponseData($response)
 	{
-		Mage::log(__METHOD__);
-		try
+		if (($pos = strpos($response, ':')) === false)
 		{
-			$this->_getPayment()->execute();
-			Mage::log('execute ok');
-			$this->_redirect('checkout/onepage/success');
-			return;
+			$status = $response;
+			$xml = '';
 		}
-		catch (Mage_Core_Exception $e)
+		else
 		{
-			Mage::logException($e);
-			Mage::helper('checkout')->sendPaymentFailedEmail($this->_getSession()->getQuote(), $e->getMessage());
-			$this->_getSession()->addError($e->getMessage());
+			$status = substr($response, 0, strpos($response, ':'));
+			$xml = substr($response, strpos($response, ':')+1);
 		}
-		catch (Exception $e)
-		{
-			Mage::logException($e);
-			Mage::helper('checkout')->sendPaymentFailedEmail(
-				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay')->__("An error occures while processing the payment: %s", print_r($e, 1))
-			);
-			$this->_getSession()->addError(
-				Mage::helper('saferpay')->__('An error occured while processing the payment, please contact the store owner for assistance.')
-			);
-		}
-
-		/**
-		 * In case of errors redirect to the shopping cart
-		 */
-		$this->_redirect('checkout/cart');
+		return array($status, $xml);
 	}
 
 	/**

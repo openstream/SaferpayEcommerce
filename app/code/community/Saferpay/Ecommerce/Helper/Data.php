@@ -37,7 +37,12 @@ class Saferpay_Ecommerce_Helper_Data extends Mage_Core_Helper_Abstract
 		return Zend_Locale_Math::round($value, 2);
 	}
 	
-	public function process_url($url){
+	public function process_url($url, $params = array()){
+		foreach ($params as $k => $v){
+			$url .= strpos($url, '?') === false ? '?' : '&';
+			$url .= sprintf("%s=%s", $k, urlencode($v));
+		}
+	
 		$adapter = Mage::getStoreConfig('saferpay/settings/http_client_adapter');
 		if ('stream_wrapper' !== $adapter && class_exists($adapter, true) && ($adapter = new $adapter) && $adapter instanceof Zend_Http_Client_Adapter_Interface){
 			$client = new Zend_Http_Client($url, array('adapter' => $adapter));

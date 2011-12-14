@@ -95,16 +95,6 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		return $data;
 	}
 
-	protected function _appendQueryParams($url, array $params)
-	{
-		foreach ($params as $k => $v)
-		{
-			$url .= strpos($url, '?') === false ? '?' : '&';
-			$url .= sprintf("%s=%s", $k, urlencode($v));
-		}
-		return $url;
-	}
-
 	/**
 	 * Return the payment provider id
 	 *
@@ -136,48 +126,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 
         return $this;
     }
-
-
-    /**
-     * Execute the payment
-     *
-     * @return Saferpay_Standard_Model_Abstract
-     */
-	public function execute()
-	{
-		Mage::log(__METHOD__);
-		$payment = $this->getOrder()->getPayment();
-		$payment->setStatus(self::STATUS_APPROVED);
-//		$this->getInfoInstance()->setStatus(self::STATUS_APPROVED);
-		if ($this->getConfigPaymentAction() == self::ACTION_AUTHORIZE_CAPTURE)
-		{
-			$this->_createInvoice();
-			$this->getOrder()
-				->sendNewOrderEmail()
-				->setEmailSent(true)
-				->save();
-		}
-
-		return $this;
-	}
 	
-	/**
-	 * Builds invoice for order
-	 *
-	 * @return Saferpay_Business_Model_Scd
-	 */
-	protected function _createInvoice()
-	{
-		Mage::log(__METHOD__);
-		if (! $this->getOrder()->canInvoice()) {
-			return;
-		}
-		$invoice = $this->getOrder()->prepareInvoice();
-		$invoice->register()->capture();
-		$this->getOrder()->addRelatedObject($invoice);
-		return $this;
-	}
-
 	/**
 	 * Return url for redirection after order placed
 	 *
@@ -185,11 +134,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-		$url = $this->getPayInitUrl();
-		$url = $this->_appendQueryParams($url, $this->getPayInitFields());
-		Mage::log($this->getPayInitFields());
-		Mage::log($url);
-		$result = trim(Mage::helper('saferpay')->process_url($url));
+		$result = trim(Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields()));
 		Mage::log('redirect to url: ' . urldecode($result));
 		return $result;
 	}
@@ -253,10 +198,10 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 			'CCCVC'                 => 'yes',
 			'CCNAME'                => 'yes',
 			'ORDERID'               => $orderId,
-			'SUCCESSLINK'           => Mage::helper('saferpay')->getSetting('success_url').'?id='.$orderId,
-			'BACKLINK'              => Mage::helper('saferpay')->getSetting('back_url').'?id='.$orderId,
-			'FAILLINK'              => Mage::helper('saferpay')->getSetting('fail_url').'?id='.$orderId,
-			'NOTIFYURL'             => Mage::helper('saferpay')->getSetting('notify_url').'?id='.$orderId,
+			'SUCCESSLINK'           => Mage::helper('saferpay')->getSetting('success_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
+			'BACKLINK'              => Mage::helper('saferpay')->getSetting('back_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
+			'FAILLINK'              => Mage::helper('saferpay')->getSetting('fail_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
+			'NOTIFYURL'             => Mage::helper('saferpay')->getSetting('notify_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
 			'AUTOCLOSE'             => 0,
 			'PROVIDERSET'           => $this->getProviderId(),
 			'LANGID'                => $this->getLangId(),
@@ -373,52 +318,6 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	{
 		$paymentAction = $this->getConfigData('payment_action');
 		return empty($paymentAction) ? true : $paymentAction;
-	}
-
-
-	/**
-	 * Verify a signature from the saferpay gateway response
-	 *
-	 * @param string $data
-	 * @param string $sig
-	 * @return Saferpay_Business_Model_Abstract
-	 */
-	public function verifySignature($data, $sig)
-	{
-		$params = array(
-			'DATA' => $data,
-			'SIGNATURE' => $sig
-		);
-		$url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
-		$url = $this->_appendQueryParams($url, $params);
-		$response = trim(Mage::helper('saferpay')->process_url($url));
-		list($status, $params) = $this->_splitResponseData($response);
-		if ($status != 'OK')
-		{
-			$this->_throwException('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response);
-		}
-		return $this;
-	}
-	
-	/**
-	 * Seperate the result status and the xml in the response
-	 *
-	 * @param string $response
-	 * @return array
-	 */
-	protected function _splitResponseData($response)
-	{
-		if (($pos = strpos($response, ':')) === false)
-		{
-			$status = $response;
-			$xml = '';
-		}
-		else
-		{
-			$status = substr($response, 0, strpos($response, ':'));
-			$xml = substr($response, strpos($response, ':')+1);
-		}
-		return array($status, $xml);
 	}
 
 	/**
