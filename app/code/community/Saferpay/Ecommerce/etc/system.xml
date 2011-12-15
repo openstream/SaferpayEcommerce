@@ -65,43 +65,51 @@
 							<show_in_website>0</show_in_website>
 							<show_in_store>0</show_in_store>
 						</http_client_adapter>
-						<success_url translate="label comment">
-							<label>Success URL</label>
+						<payinit_base_url translate="label comment">
+							<label>PayInit URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>40</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
-						</success_url>
-						<back_url translate="label comment">
-							<label>Back URL</label>
+						</payinit_base_url>
+						<paycomplete_base_url translate="label comment">
+							<label>PayComplete URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>50</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
-						</back_url>
-						<fail_url translate="label comment">
-							<label>Fail URL</label>
+						</paycomplete_base_url>
+						<execute_base_url translate="label comment">
+							<label>Execute URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>60</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
-						</fail_url>
-						<notify_url translate="label comment">
-							<label>Notify URL</label>
+						</execute_base_url>
+						<verify_base_url translate="label comment">
+							<label>Verify URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>70</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
-						</notify_url>
+						</verify_base_url>
+						<verifysig_base_url translate="label comment">
+							<label>VerifySig URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>80</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</verifysig_base_url>
 						<vtconfig translate="label comment">
 							<label>VTCONFIG</label>
 							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
 							<frontend_type>text</frontend_type>
-							<sort_order>80</sort_order>
+							<sort_order>90</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
