@@ -42,6 +42,24 @@
 				<class>Saferpay_Ecommerce_Helper</class>
 			</saferpay>
 		</helpers>
+		<sales>
+			<order>
+				<statuses>
+					<authorized translate="label">
+						<label>Authorized Payment</label>
+					</authorized>
+				</statuses>
+				<states>
+				   <authorized translate="label">
+						<label>Authorized Payment</label>
+						<statuses>
+							<authorized default="1"/>
+						</statuses>
+						<visible_on_front>1</visible_on_front>						
+				   </authorized>
+				</states>
+			</order>
+		</sales>		
 		<resources>
 			<ecommerce_setup>
 				<setup>
@@ -85,6 +103,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/giropay</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_giropay>
 			<saferpay_eps translate="title" module="saferpay">
 				<active>0</active>
@@ -92,6 +111,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/eps</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_eps>
 			<saferpay_ideal translate="title" module="saferpay">
 				<active>0</active>
@@ -99,6 +119,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/ideal</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_ideal>
 			<saferpay_paypal translate="title" module="saferpay">
 				<active>0</active>
@@ -106,6 +127,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/paypal</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_paypal>
 			<saferpay_maestro translate="title" module="saferpay">
 				<active>0</active>
@@ -113,6 +135,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/maestro</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_maestro>
 			<saferpay_creditcard translate="title" module="saferpay">
 				<active>0</active>
@@ -120,6 +143,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/creditcard</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_creditcard>
 			<saferpay_elv translate="title" module="saferpay">
 				<active>0</active>
@@ -127,6 +151,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/elv</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_elv>
 			<saferpay_postfinance translate="title" module="saferpay">
 				<active>0</active>
@@ -134,6 +159,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/postfinance</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_postfinance>
 			<saferpay_billpayrechnungskauf translate="title" module="saferpay">
 				<active>0</active>
@@ -141,6 +167,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/billpayrechnungskauf</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_billpayrechnungskauf>
 			<saferpay_billpaylastschrift translate="title" module="saferpay">
 				<active>0</active>
@@ -148,6 +175,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/billpaylastschrift</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_billpaylastschrift>
 			<saferpay_mpass translate="title" module="saferpay">
 				<active>0</active>
@@ -155,6 +183,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/mpass</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_mpass>
 			<saferpay_clickandbuy translate="title" module="saferpay">
 				<active>0</active>
@@ -162,6 +191,7 @@
 				<allowspecific>0</allowspecific>
 				<provider_id></provider_id>
 				<model>saferpay/clickandbuy</model>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_clickandbuy>
 		</payment>
 		<saferpay>

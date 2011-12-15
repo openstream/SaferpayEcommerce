@@ -52,7 +52,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			$order->loadByIncrementId($this->getRequest()->getParam('id', ''));
 			$payment = $order->getPayment();
 			$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
-			if ($this->getRequest()->getParam('capture', '')){
+			if ($this->getRequest()->getParam('capture', '') == Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE){
 				if (!$order->canInvoice()) {
 					Mage::throwException($this->__('Can not create an invoice.'));
 				}
@@ -62,6 +62,9 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 				$order->sendNewOrderEmail()
 					  ->setEmailSent(true)
 					  ->save();
+			}else{
+				$order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $this->__('Authorized by SaferPay'))
+				      ->save();
 			}
 		}catch (Mage_Core_Exception $e){
 			Mage::logException($e);

@@ -45,6 +45,8 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	protected $_canUseForMultishipping = false;
 
     protected $_order;
+	
+	const STATE_AUTHORIZED = 'authorized';
 
     /**
      * Get order model
@@ -198,25 +200,15 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 			'CCCVC'                 => 'yes',
 			'CCNAME'                => 'yes',
 			'ORDERID'               => $orderId,
-			'SUCCESSLINK'           => Mage::helper('saferpay')->getSetting('success_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
-			'BACKLINK'              => Mage::helper('saferpay')->getSetting('back_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
-			'FAILLINK'              => Mage::helper('saferpay')->getSetting('fail_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
-			'NOTIFYURL'             => Mage::helper('saferpay')->getSetting('notify_url').'?id='.$orderId.'&capture='.$this->getConfigPaymentAction(),
+			'SUCCESSLINK'           => Mage::helper('saferpay')->getSetting('success_url').'?id='.$orderId.'&capture='.$this->getConfigData('payment_action'),
+			'BACKLINK'              => Mage::helper('saferpay')->getSetting('back_url').'?id='.$orderId.'&capture='.$this->getConfigData('payment_action'),
+			'FAILLINK'              => Mage::helper('saferpay')->getSetting('fail_url').'?id='.$orderId.'&capture='.$this->getConfigData('payment_action'),
+			'NOTIFYURL'             => Mage::helper('saferpay')->getSetting('notify_url').'?id='.$orderId.'&capture='.$this->getConfigData('payment_action'),
 			'AUTOCLOSE'             => 0,
 			'PROVIDERSET'           => $this->getProviderId(),
 			'LANGID'                => $this->getLangId(),
 			'SHOWLANGUAGES'         => $this->getUseDefaultLangId() ? 'yes' : 'no',
-			'VTCONFIG'				=> Mage::helper('saferpay')->getSetting('vtconfig'),
-			/*
-			'BODYCOLOR'             => '',
-			'HEADCOLOR'             => '',
-			'HEADLINECOLOR'         => '',
-			'MENUCOLOR'             => '',
-			'BODYFONTCOLOR'         => '',
-			'HEADFONTCOLOR'         => '',
-			'MENUFONTCOLOR'         => '',
-			'FONT'                  => '',
-			 */
+			'VTCONFIG'				=> Mage::helper('saferpay')->getSetting('vtconfig')
 		);
 
 		return $params;
@@ -307,17 +299,6 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		$stateObject->setStatus(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
 		$stateObject->setIsNotified(false);
 		$this->getSession()->setSaferpayPaymentMethod($this->getCode());
-	}
-
-	/**
-	 * Get config action to process initialization
-	 *
-	 * @return true | string
-	 */
-	public function getConfigPaymentAction()
-	{
-		$paymentAction = $this->getConfigData('payment_action');
-		return empty($paymentAction) ? true : $paymentAction;
 	}
 
 	/**
