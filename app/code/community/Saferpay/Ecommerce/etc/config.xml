@@ -202,7 +202,7 @@
 				<!-- Card registration URL and MPI URL generation: -->
 				<payinit_base_url>https://www.saferpay.com/hosting/CreatePayInit.asp</payinit_base_url>
 				<!-- Capture and cancel -->
-				<paycomplete_base_url>https://www.saferpay.com/hosting/PayComplete.asp</paycomplete_base_url>
+				<paycomplete_base_url>https://www.saferpay.com/hosting/PayCompleteV2.asp</paycomplete_base_url>
 				<!-- Authorization and credit -->
 				<execute_base_url>https://www.saferpay.com/hosting/Execute.asp</execute_base_url>
 				<!-- MPI status queries -->

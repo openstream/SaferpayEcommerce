@@ -47,21 +47,36 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 
 	public function notifyAction(){
 		try{
-			$this->verifySignature($this->getRequest()->getParam('DATA', ''), $this->getRequest()->getParam('SIGNATURE', ''));
+			$ret = $this->verifySignature($this->getRequest()->getParam('DATA', ''), $this->getRequest()->getParam('SIGNATURE', ''));
 			$order = Mage::getModel('sales/order');
 			$order->loadByIncrementId($this->getRequest()->getParam('id', ''));
 			$payment = $order->getPayment();
 			$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
 			if ($this->getRequest()->getParam('capture', '') == Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE){
-				if (!$order->canInvoice()) {
-					Mage::throwException($this->__('Can not create an invoice.'));
+				$params = array(
+					'ACCOUNTID' => Mage::helper('saferpay')->getSetting('saferpay_account_id'),
+					'ID' => $ret['ID']
+				);
+				if(Mage::helper('saferpay')->getSetting('saferpay_account_id') == '99867-94913159'){
+					// spPassword is required only for test account
+					$params['spPassword'] = Mage::helper('saferpay')->getSetting('saferpay_password');
 				}
-				$invoice = $order->prepareInvoice();
-				$invoice->register()->capture();
-				$order->addRelatedObject($invoice);
-				$order->sendNewOrderEmail()
-					  ->setEmailSent(true)
-					  ->save();
+				$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
+				$response = Mage::helper('saferpay')->process_url($url, $params);
+				list($status, $params) = $this->_splitResponseData($response);
+				if ($status == 'OK'){
+					if (!$order->canInvoice()) {
+						Mage::throwException($this->__('Can not create an invoice.'));
+					}
+					$invoice = $order->prepareInvoice();
+					$invoice->register()->capture();
+					$order->addRelatedObject($invoice);
+					$order->sendNewOrderEmail()
+						  ->setEmailSent(true)
+						  ->save();
+				}else{
+					Mage::throwException(Mage::helper('saferpay')->__('PayComplete call failed. Result: "%s"', $response));
+				}
 			}else{
 				$order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $this->__('Authorized by SaferPay'))
 				      ->save();
@@ -120,13 +135,13 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			'SIGNATURE' => $sig
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
-		$response = trim(Mage::helper('saferpay')->process_url($url, $params));
+		$response = Mage::helper('saferpay')->process_url($url, $params);
 		list($status, $params) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{
-			$this->_throwException('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response);
+			Mage::throwException(Mage::helper('saferpay')->__('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response));
 		}
-		return $this;
+		return $params;
 	}
 
 	/**
@@ -140,14 +155,23 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 		if (($pos = strpos($response, ':')) === false)
 		{
 			$status = $response;
-			$xml = '';
+			$ret = array();
 		}
 		else
 		{
 			$status = substr($response, 0, strpos($response, ':'));
-			$xml = substr($response, strpos($response, ':')+1);
+			$params = substr($response, strpos($response, ':')+1);
+			$params = explode('&', $params);
+			$ret = array();
+			foreach($params as $param){
+			 list($key, $val) = split('=', $param);
+			 if($key && $val){
+			  $ret[$key] = $val;
+			 }
+			}
+
 		}
-		return array($status, $xml);
+		return array($status, $ret);
 	}
 
 	/**

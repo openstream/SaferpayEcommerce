@@ -50,6 +50,6 @@ class Saferpay_Ecommerce_Helper_Data extends Mage_Core_Helper_Abstract
 		}else{
 			$contents = file_get_contents($url);
 		}
-		return $contents;
+		return trim($contents);
 	}
 }

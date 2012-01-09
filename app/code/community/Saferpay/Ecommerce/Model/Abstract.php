@@ -136,7 +136,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-		$result = trim(Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields()));
+		$result = Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields());
 		Mage::log('redirect to url: ' . urldecode($result));
 		return $result;
 	}
