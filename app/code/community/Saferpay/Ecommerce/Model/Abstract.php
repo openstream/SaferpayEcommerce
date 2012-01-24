@@ -85,18 +85,6 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		return Mage::getSingleton('checkout/session');
 	}
 
-	protected function _parseResponseXml($xml)
-	{
-		$data = array();
-		if ($xml)
-		{
-			$xml = simplexml_load_string($xml);
-			$data = (array) $xml->attributes();
-			$data = $data['@attributes'];
-		}
-		return $data;
-	}
-
 	/**
 	 * Return the payment provider id
 	 *

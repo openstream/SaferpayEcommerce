@@ -52,4 +52,14 @@ class Saferpay_Ecommerce_Helper_Data extends Mage_Core_Helper_Abstract
 		}
 		return trim($contents);
 	}
+	
+	public function _parseResponseXml($xml)
+	{
+		if($xml = simplexml_load_string($xml)){
+			$data = (array) $xml->attributes();
+			return $data['@attributes'];
+		}else{
+			return 0;
+		}
+	}
 }

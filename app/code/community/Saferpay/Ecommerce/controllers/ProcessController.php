@@ -64,7 +64,8 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 				$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
 				$response = Mage::helper('saferpay')->process_url($url, $params);
 				list($status, $params) = $this->_splitResponseData($response);
-				if ($status == 'OK'){
+				$params = Mage::helper('saferpay')->_parseResponseXml($params);
+				if ($status == 'OK' && is_array($params) && isset($params['RESULT']) && $params['RESULT'] == 0){
 					if (!$order->canInvoice()) {
 						Mage::throwException($this->__('Can not create an invoice.'));
 					}
@@ -152,24 +153,24 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 	 */
 	protected function _splitResponseData($response)
 	{
-		if (($pos = strpos($response, ':')) === false)
-		{
+		if (($pos = strpos($response, ':')) === false){
 			$status = $response;
 			$ret = array();
-		}
-		else
-		{
+		}else{
 			$status = substr($response, 0, strpos($response, ':'));
 			$params = substr($response, strpos($response, ':')+1);
-			$params = explode('&', $params);
-			$ret = array();
-			foreach($params as $param){
-			 list($key, $val) = split('=', $param);
-			 if($key && $val){
-			  $ret[$key] = $val;
+			if(preg_match('/&/', $params)){
+			 $params = explode('&', $params);
+			 $ret = array();
+			 foreach($params as $param){
+			  list($key, $val) = split('=', $param);
+			  if($key && $val){
+			   $ret[$key] = $val;
+			  }
 			 }
+			}else{
+			 $ret = $params;
 			}
-
 		}
 		return array($status, $ret);
 	}
