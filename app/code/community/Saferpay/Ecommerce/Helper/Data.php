@@ -62,4 +62,34 @@ class Saferpay_Ecommerce_Helper_Data extends Mage_Core_Helper_Abstract
 			return 0;
 		}
 	}
+	
+	/**
+	 * Seperate the result status and the xml in the response
+	 *
+	 * @param string $response
+	 * @return array
+	 */
+	public function _splitResponseData($response)
+	{
+		if (($pos = strpos($response, ':')) === false){
+			$status = $response;
+			$ret = array();
+		}else{
+			$status = substr($response, 0, strpos($response, ':'));
+			$params = substr($response, strpos($response, ':')+1);
+			if(preg_match('/&/', $params)){
+			 $params = explode('&', $params);
+			 $ret = array();
+			 foreach($params as $param){
+			  list($key, $val) = split('=', $param);
+			  if($key && $val){
+			   $ret[$key] = $val;
+			  }
+			 }
+			}else{
+			 $ret = $params;
+			}
+		}
+		return array($status, $ret);
+	}	
 }
