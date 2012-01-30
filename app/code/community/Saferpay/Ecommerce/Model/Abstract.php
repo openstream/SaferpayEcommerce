@@ -124,9 +124,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-		$result = Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields());
-		Mage::log('redirect to url: ' . urldecode($result));
-		return $result;
+		return Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields());
 	}
 
 	/**
@@ -196,6 +194,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 			'PROVIDERSET'           => $this->getProviderId(),
 			'LANGID'                => $this->getLangId(),
 			'SHOWLANGUAGES'         => $this->getUseDefaultLangId() ? 'yes' : 'no',
+			'DELIVERY'				=> 'no',
 			'VTCONFIG'				=> Mage::helper('saferpay')->getSetting('vtconfig')
 		);
 
