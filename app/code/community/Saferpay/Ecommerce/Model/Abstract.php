@@ -95,27 +95,6 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 		$id = str_replace(' ', '', (string) $this->getConfigData('provider_id'));
 		return $id;
 	}
-
-    /**
-     *
-     * @param string $status Either "failed" or "cancelled"
-     */
-    public function abortPayment($status)
-    {
-        /*
-         * Add status to order history
-         */
-        $this->getOrder()->addStatusHistoryComment(
-            Mage::helper('saferpay')->__('Payment aborted with status "%s"', Mage::helper('saferpay')->__($status))
-        )->save();
-
-        /*
-         * Update status
-         */
-        $this->cancel($this->getInfoInstance());
-
-        return $this;
-    }
 	
 	/**
 	 * Return url for redirection after order placed

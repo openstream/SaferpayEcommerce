@@ -26,6 +26,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 	}
 
 	public function notifyAction(){
+		sleep(10);
 		$this->_processPayment('notify');
 	}
 
@@ -40,9 +41,15 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 	public function _abortPayment($event){
 		$_session = Mage::getSingleton('checkout/session');
 		try{
-			$methodCode = $_session->getSaferpayPaymentMethod();
-			$model = Mage::getStoreConfig('payment/' . $methodCode . '/model');
-			Mage::getModel($model)->abortPayment($event);
+			$message = Mage::helper('saferpay')->__('Payment aborted with status "%s"', Mage::helper('saferpay')->__($event));
+			$order = Mage::getModel('sales/order');
+			$order->loadByIncrementId($this->getRequest()->getParam('id', ''));
+			$_session->addError($message);
+			$payment = $order->getPayment();
+			$payment->setStatus('canceled')
+					->setIsTransactionClosed(1);
+			$order->setState('canceled', true, $message)
+				  ->save();
 		}catch (Mage_Core_Exception $e){
 			Mage::logException($e);
 			$_session->addError($e->getMessage());
@@ -58,10 +65,6 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 		$_session = Mage::getSingleton('checkout/session');
 		$order = Mage::getModel('sales/order');
 		$order->loadByIncrementId($this->getRequest()->getParam('id', ''));
-		$old_state = $order->getState();
-		// This trick is made in order to avoid both 'notify' and 'success' actions to run this code. The order state is temporary
-		// set to 'processing' by the first action and changed to 'complete', 'authorized' or back to 'pending_payment' at the end.
-		$order->setState('processing', true, $this->__('Processing by SaferPay'))->save();
 		try{
 			$params = array(
 				'DATA' => $this->getRequest()->getParam('DATA', ''),
@@ -74,7 +77,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 				Mage::throwException(Mage::helper('saferpay')->__('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response));
 			}
 		
-			if($old_state == 'pending_payment'){
+			if($order->getState() == 'pending_payment'){
 				$payment = $order->getPayment();
 				$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
 				if ($this->getRequest()->getParam('capture', '') == Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE){
@@ -110,7 +113,6 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			}
 			return true;
 		}catch (Mage_Core_Exception $e){
-			$order->setState('pending_payment', true, $this->__('Processing by SaferPay Failed'))->save();
 			Mage::logException($e);
 			if($event == 'success'){
 			 Mage::helper('checkout')->sendPaymentFailedEmail($_session->getQuote(), $e->getMessage());
@@ -118,7 +120,6 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			$_session->addError($e->getMessage());
 			return false;
 		}catch (Exception $e){
-			$order->setState('pending_payment', true, $this->__('Processing by SaferPay Failed'))->save();
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail($_session->getQuote(), Mage::helper('saferpay')->__("An error occures while processing the payment: %s", print_r($e, 1)));
 			$_session->addError(Mage::helper('saferpay')->__('An error occured while processing the payment, please contact the store owner for assistance.'));
