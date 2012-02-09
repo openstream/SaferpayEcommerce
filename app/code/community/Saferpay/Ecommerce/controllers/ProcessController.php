@@ -94,6 +94,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 					list($status, $params) = Mage::helper('saferpay')->_splitResponseData($response);
 					$params = Mage::helper('saferpay')->_parseResponseXml($params);
 					if ($status == 'OK' && is_array($params) && isset($params['RESULT']) && $params['RESULT'] == 0){
+						$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, $this->__('Captured by SaferPay. Transaction ID: '.$ret['ID']));
 						if (!$order->canInvoice()) {
 							Mage::throwException($this->__('Can not create an invoice.'));
 						}
@@ -107,7 +108,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 						Mage::throwException(Mage::helper('saferpay')->__('PayComplete call failed. Result: "%s"', $response));
 					}
 				}else{
-					$order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $this->__('Authorized by SaferPay'))
+					$order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $this->__('Authorized by SaferPay. Transaction ID: '.$ret['ID']))
 						  ->save();
 				}
 			}
