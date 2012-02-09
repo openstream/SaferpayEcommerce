@@ -103,7 +103,13 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-		return Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields());
+		$url = Mage::helper('saferpay')->process_url($this->getPayInitUrl(), $this->getPayInitFields());
+		if(preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $url)){
+			return $url;
+		}else{
+			Mage::getSingleton('checkout/session')->addError(Mage::helper('saferpay')->__('An error occured while processing the payment failure, please contact the store owner for assistance.'));
+			return Mage::getUrl('checkout/cart');
+		}
 	}
 
 	/**
