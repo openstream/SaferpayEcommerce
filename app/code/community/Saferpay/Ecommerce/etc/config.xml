@@ -81,6 +81,15 @@
 				</args>
 			</saferpay>
 		</routers>
+        <translate>
+            <modules>
+                <Saferpay_Ecommerce>
+                    <files>
+                        <default>Saferpay_Ecommerce.csv</default>
+                    </files>
+                </Saferpay_Ecommerce>
+            </modules>
+        </translate>
 	</frontend>
 	<adminhtml>
         <translate>

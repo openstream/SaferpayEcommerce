@@ -40,7 +40,7 @@
 					<fields>
 						<saferpay_account_id translate="label comment">
 							<label>Account-ID</label>
-							<comment>Use 99867-94913159 for testing</comment>
+							<comment>Use XAjc3Kna for testing (leave empty if you don't have a Saferpay Business contract)</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>10</sort_order>
 							<show_in_default>1</show_in_default>
@@ -65,7 +65,7 @@
 							<show_in_website>0</show_in_website>
 							<show_in_store>0</show_in_store>
 						</http_client_adapter>
-						<payinit_base_url translate="label comment">
+						<payinit_base_url translate="label">
 							<label>PayInit URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>40</sort_order>
@@ -73,7 +73,7 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</payinit_base_url>
-						<paycomplete_base_url translate="label comment">
+						<paycomplete_base_url translate="label">
 							<label>PayComplete URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>50</sort_order>
@@ -81,7 +81,7 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</paycomplete_base_url>
-						<verifysig_base_url translate="label comment">
+						<verifysig_base_url translate="label">
 							<label>VerifySig URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>80</sort_order>
@@ -128,7 +128,7 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 						</title>
-						<provider_id translate="label">
+						<provider_id translate="label comment">
 							<label>Provider ID</label>
 							<comment>Seperate multiple provider ID's with commas</comment>
 							<frontend_type>text</frontend_type>
@@ -389,7 +389,7 @@
 					</fields>
 				</saferpay_paypal>
 				<saferpay_maestro translate="label" module="saferpay">
-					<label>Mæstro (via Saferpay E-Commerce)</label>
+					<label>Maestro (via Saferpay E-Commerce)</label>
 					<sort_order>34</sort_order>
 					<show_in_default>1</show_in_default>
 					<show_in_website>1</show_in_website>
