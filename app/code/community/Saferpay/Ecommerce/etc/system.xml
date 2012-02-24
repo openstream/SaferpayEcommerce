@@ -40,7 +40,7 @@
 					<fields>
 						<saferpay_account_id translate="label comment">
 							<label>Account-ID</label>
-							<comment>Use XAjc3Kna for testing (leave empty if you don't have a Saferpay Business contract)</comment>
+							<comment>Use 99867-94913159 for testing</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>10</sort_order>
 							<show_in_default>1</show_in_default>
@@ -49,7 +49,7 @@
 						</saferpay_account_id>
 						<saferpay_password translate="label comment">
 							<label>Hosting Password</label>
-							<comment>Use XAjc3Kna for testing</comment>
+							<comment>Use XAjc3Kna for testing (leave empty if you don't have a Saferpay Business contract)</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>20</sort_order>
 							<show_in_default>1</show_in_default>
