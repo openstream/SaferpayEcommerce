@@ -40,7 +40,7 @@
 					<fields>
 						<saferpay_account_id translate="label comment">
 							<label>Account-ID</label>
-							<comment>Use 99867-94913159 for testing</comment>
+							<comment>Determine which Saferpay account the transactions will be made through. The merchant is sent a Saferpay Account ID after signing a contract with Saferpay. Test transactions can be made with the Account ID: 99867-94913159</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>10</sort_order>
 							<show_in_default>1</show_in_default>
@@ -49,14 +49,15 @@
 						</saferpay_account_id>
 						<saferpay_password translate="label comment">
 							<label>Hosting Password</label>
-							<comment>Use XAjc3Kna for testing (leave empty if you don't have a Saferpay Business contract)</comment>
+							<comment>Is only needed for the Saferpay test account (the password for this is: XAjc3Kna) and for accounts with a Saferpay Business contract. For accounts with an E-Commerce contract, please leave this field empty.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>20</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</saferpay_password>
-						<http_client_adapter translate="label">
+						<http_client_adapter translate="label comment">
+							<comment>Determine whether the SSL file access occurs using the PHP function file or curl. The functions must be activated in the local PHP environment. For questions, please contact your system administrator.</comment>
 							<label>SSL Access Method</label>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_http_client</source_model>
@@ -65,23 +66,26 @@
 							<show_in_website>0</show_in_website>
 							<show_in_store>0</show_in_store>
 						</http_client_adapter>
-						<payinit_base_url translate="label">
+						<payinit_base_url translate="label comment">
 							<label>PayInit URL</label>
+							<comment>URL for establishing the payment link. Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/CreatePayInit.asp</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>40</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</payinit_base_url>
-						<paycomplete_base_url translate="label">
+						<paycomplete_base_url translate="label comment">
 							<label>PayComplete URL</label>
+							<comment>URL for verification of the authorization reply. Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/VerifyPayConfirm.asp</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>50</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</paycomplete_base_url>
-						<verifysig_base_url translate="label">
+						<verifysig_base_url translate="label comment">
+							<comment>URL for booking the transaction: Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/PayComplete.asp</comment>
 							<label>VerifySig URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>80</sort_order>
@@ -130,7 +134,7 @@
 						</title>
 						<provider_id translate="label comment">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -156,8 +160,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -201,7 +206,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -227,8 +232,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -272,7 +278,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -298,8 +304,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -343,7 +350,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -369,8 +376,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -414,7 +422,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -440,8 +448,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -485,7 +494,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -511,8 +520,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -556,7 +566,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -582,8 +592,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -627,7 +638,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -653,8 +664,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -698,7 +710,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -724,8 +736,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -769,7 +782,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -795,8 +808,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -840,7 +854,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -866,8 +880,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
@@ -911,7 +926,7 @@
 						</title>
 						<provider_id translate="label">
 							<label>Provider ID</label>
-							<comment>Seperate multiple provider ID's with commas</comment>
+							<comment>This is the option of not displaying all activated payment methods on the payment page. If provider ID’s of one or more payment methods are entered here (separated with a comma) only the corresponding methods will be displayed on the payment page. If no entry is made, then all payment means are displayed. If you have questions regarding the provider ID's for the payment methods activated for your account, please send an email with your account ID at integration@saferpay.com.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
@@ -937,8 +952,9 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
-						<payment_action translate="label">
+						<payment_action translate="label comment">
 							<label>Payment Action</label>
+							<comment>Determine whether the transactions shall be automatically booked if the authorization is successful. The booking can generally also subsequently be made manually using Saferpay Backoffice.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>saferpay/system_config_source_payment_action</source_model>
 							<sort_order>55</sort_order>
