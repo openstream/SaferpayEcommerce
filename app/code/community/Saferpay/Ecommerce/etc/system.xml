@@ -95,7 +95,7 @@
 						</verifysig_base_url>
 						<vtconfig translate="label comment">
 							<label>VTCONFIG</label>
-							<comment>Designates the configuration that is to be used for the Payment Page.</comment>
+							<comment>The name of a configuration set up in Saferpay Backoffice can be entered here. These configuration settings will then be used. For example, configurations enable the integration of a merchant logo on the payment page.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>90</sort_order>
 							<show_in_default>1</show_in_default>
