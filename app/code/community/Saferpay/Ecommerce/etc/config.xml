@@ -206,8 +206,8 @@
 		<saferpay>
 			<settings>
 				<saferpay_username></saferpay_username>
-				<saferpay_password></saferpay_password>
-				<saferpay_account_id></saferpay_account_id>
+				<saferpay_password>XAjc3Kna</saferpay_password>
+				<saferpay_account_id>99867-94913159</saferpay_account_id>
 				<!-- Card registration URL and MPI URL generation: -->
 				<payinit_base_url>https://www.saferpay.com/hosting/CreatePayInit.asp</payinit_base_url>
 				<!-- Capture and cancel -->

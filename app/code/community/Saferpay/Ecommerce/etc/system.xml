@@ -77,7 +77,7 @@
 						</payinit_base_url>
 						<paycomplete_base_url translate="label comment">
 							<label>PayComplete URL</label>
-							<comment>URL for verification of the authorization reply. Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/VerifyPayConfirm.asp</comment>
+							<comment>URL for booking the transaction: Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/PayCompleteV2.asp</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>50</sort_order>
 							<show_in_default>1</show_in_default>
@@ -85,7 +85,7 @@
 							<show_in_store>0</show_in_store>
 						</paycomplete_base_url>
 						<verifysig_base_url translate="label comment">
-							<comment>URL for booking the transaction: Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/PayComplete.asp</comment>
+							<comment>URL for verification of the authorization reply. Only change this value if requested to do so by Saferpay. The default value is: https://www.saferpay.com/hosting/VerifyPayConfirm.asp</comment>
 							<label>VerifySig URL</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>80</sort_order>
