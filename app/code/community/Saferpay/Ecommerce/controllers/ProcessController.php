@@ -44,6 +44,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			$message = Mage::helper('saferpay')->__('Payment aborted with status "%s"', Mage::helper('saferpay')->__($event));
 			$order = Mage::getModel('sales/order');
 			$order->loadByIncrementId($this->getRequest()->getParam('id', ''));
+			$order->cancel();
 			$_session->addError($message);
 			$payment = $order->getPayment();
 			$payment->setStatus('canceled')
