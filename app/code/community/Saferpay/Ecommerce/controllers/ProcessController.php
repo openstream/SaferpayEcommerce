@@ -86,9 +86,10 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 						'ACCOUNTID' => Mage::helper('saferpay')->getSetting('saferpay_account_id'),
 						'ID' => $ret['ID']
 					);
-					if(Mage::helper('saferpay')->getSetting('saferpay_account_id') == '99867-94913159'){
-						// spPassword is required only for test account
-						$params['spPassword'] = Mage::helper('saferpay')->getSetting('saferpay_password');
+					$password = Mage::helper('saferpay')->getSetting('saferpay_password');
+					if($password){
+						// spPassword is required only for test and business accounts
+						$params['spPassword'] = $password;
 					}
 					$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
 					$response = Mage::helper('saferpay')->process_url($url, $params);
