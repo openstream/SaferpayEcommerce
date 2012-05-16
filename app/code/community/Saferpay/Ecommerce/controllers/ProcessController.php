@@ -109,7 +109,9 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 						Mage::throwException(Mage::helper('saferpay')->__('PayComplete call failed. Result: "%s"', $response));
 					}
 				}else{
-					$order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $this->__('Authorized by SaferPay. Transaction ID: '.$ret['ID']))
+					$order->sendNewOrderEmail()
+                          ->setEmailSent(true)
+					      ->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $this->__('Authorized by SaferPay. Transaction ID: '.$ret['ID']))
 						  ->save();
 				}
 			}
