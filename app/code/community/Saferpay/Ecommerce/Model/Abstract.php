@@ -207,7 +207,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 					$nodes = $xml->xpath("//LANGUAGE[@CODE='{$lang}']");
 					foreach ($nodes as $node)
 					{
-						return (string) $node['LANGID'];
+						return (string) $node['CODE'];
 					}
 				}
 			}

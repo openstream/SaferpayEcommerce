@@ -26,8 +26,9 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 	}
 
 	public function notifyAction(){
-		sleep(10);
+		sleep(1);
 		$this->_processPayment('notify');
+        $this->getResponse()->setHttpResponseCode(200);
 	}
 
 	public function backAction(){
