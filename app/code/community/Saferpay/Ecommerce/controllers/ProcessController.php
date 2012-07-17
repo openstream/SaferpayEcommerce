@@ -22,7 +22,6 @@
 class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Action
 {
 	public function successAction(){
-        sleep(2);
 		$this->_redirect('checkout/'.($this->_processPayment('success') ? 'onepage/success' : 'cart'));
 	}
 
@@ -62,8 +61,8 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			$_session->addError($e->getMessage());
 		}catch (Exception $e){
 			Mage::logException($e);
-			Mage::helper('checkout')->sendPaymentFailedEmail($_session->getQuote(), $helper->__("An error occures while processing the payment failure: %s", print_r($e, 1)) . "\n");
-			$_session->addError($helper->__('An error occured while processing the payment failure, please contact the store owner for assistance.'));
+			Mage::helper('checkout')->sendPaymentFailedEmail($_session->getQuote(), $helper->__("An error occurred while processing the payment failure: %s", $e->getMessage()) . "\n");
+			$_session->addError($helper->__('An error occurred while processing the payment failure, please contact the store owner for assistance.'));
 		}
 		$this->_redirect('checkout/cart');
 	}
@@ -90,7 +89,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 				Mage::throwException($helper->__('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response));
 			}
 
-			if($order->getState() == 'pending_payment'){
+			if($event == 'notify' && $order->getState() == 'pending_payment'){
                 /** @var $payment Mage_Sales_Model_Order_Payment */
 				$payment = $order->getPayment();
 				$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
@@ -119,7 +118,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 							  ->setEmailSent(true)
 							  ->save();
 					}else{
-						Mage::throwException(Mage::helper('saferpay')->__('PayComplete call failed. Result: "%s"', $response));
+						Mage::throwException($helper->__('PayComplete call failed. Result: "%s"', $response));
 					}
 				}else{
 					$order->sendNewOrderEmail()
@@ -138,8 +137,8 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			return false;
 		}catch (Exception $e){
 			Mage::logException($e);
-			$checkout_helper->sendPaymentFailedEmail($_session->getQuote(), Mage::helper('saferpay')->__("An error occures while processing the payment: %s", print_r($e, 1)));
-			$_session->addError(Mage::helper('saferpay')->__('An error occured while processing the payment, please contact the store owner for assistance.'));
+			$checkout_helper->sendPaymentFailedEmail($_session->getQuote(), Mage::helper('saferpay')->__("An error occurred while processing the payment: %s", $e->getMessage()));
+			$_session->addError(Mage::helper('saferpay')->__('An error occurred while processing the payment, please contact the store owner for assistance.'));
 			return false;
 		}
 	}
