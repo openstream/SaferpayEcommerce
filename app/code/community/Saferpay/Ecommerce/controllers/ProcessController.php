@@ -93,6 +93,10 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
                 /** @var $payment Mage_Sales_Model_Order_Payment */
 				$payment = $order->getPayment();
 				$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
+                $data = $helper->_parseResponseXml($this->getRequest()->getParam('DATA'));
+                while (list($key, $val) = each($data)) {
+                    $payment->setAdditionalInformation($key, $val);
+                }
 				if ($this->getRequest()->getParam('capture', '') == Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE){
 					$params = array(
 						'ACCOUNTID' => $helper->getSetting('saferpay_account_id'),
