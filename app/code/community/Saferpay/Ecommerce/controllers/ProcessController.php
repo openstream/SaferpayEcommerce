@@ -87,9 +87,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 			list($status, $ret) = $helper->_splitResponseData($response);
 			if ($status != 'OK'){
 				Mage::throwException($helper->__('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response));
-			}
-
-			if($event == 'notify' && $order->getState() == 'pending_payment'){
+			} elseif ($event == 'notify' && $order->getState() == 'pending_payment') {
                 /** @var $payment Mage_Sales_Model_Order_Payment */
 				$payment = $order->getPayment();
 				$payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
@@ -108,20 +106,22 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 					$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
 					$response = $helper->process_url($url, $params);
 					list($status, $params) = $helper->_splitResponseData($response);
-					$params = $helper->_parseResponseXml($params);
-					if ($status == 'OK' && is_array($params) && isset($params['RESULT']) && $params['RESULT'] == 0){
-						$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, $this->__('Captured by SaferPay. Transaction ID: '.$ret['ID']));
-						if (!$order->canInvoice()) {
-							Mage::throwException($this->__('Can not create an invoice.'));
-						}
-                        /** @var $invoice Mage_Sales_Model_Order_Invoice */
-						$invoice = $order->prepareInvoice();
-						$invoice->register()->capture();
-						$order->addRelatedObject($invoice);
-						$order->sendNewOrderEmail()
-							  ->setEmailSent(true)
-							  ->save();
-					}else{
+                    if ($status == 'OK') {
+                        $params = $helper->_parseResponseXml($params);
+                        if (is_array($params) && isset($params['RESULT']) && $params['RESULT'] == 0){
+                            $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, $this->__('Captured by SaferPay. Transaction ID: '.$ret['ID']));
+                            if (!$order->canInvoice()) {
+                                Mage::throwException($this->__('Can not create an invoice.'));
+                            }
+                            /** @var $invoice Mage_Sales_Model_Order_Invoice */
+                            $invoice = $order->prepareInvoice();
+                            $invoice->register()->capture();
+                            $order->addRelatedObject($invoice);
+                            $order->sendNewOrderEmail()
+                                ->setEmailSent(true)
+                                ->save();
+                        }
+                    }else{
 						Mage::throwException($helper->__('PayComplete call failed. Result: "%s"', $response));
 					}
 				}else{
