@@ -49,6 +49,124 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 	const STATE_AUTHORIZED = 'authorized';
 
     /**
+     * @param $event string
+     * @param $request Mage_Core_Controller_Request_Http
+     * @return bool
+     */
+    public function _processPayment($event, $request){
+        /** @var $_session Mage_Checkout_Model_Session */
+        $_session = Mage::getSingleton('checkout/session');
+        /** @var $helper Saferpay_Ecommerce_Helper_Data */
+        $helper = Mage::helper('saferpay');
+        /** @var $checkout_helper Mage_Checkout_Helper_Data */
+        $checkout_helper = Mage::helper('checkout');
+        /** @var $order Mage_Sales_Model_Order */
+
+        $order = Mage::getModel('sales/order');
+        $order->loadByIncrementId($request->getParam('id', ''));
+
+        if ($event == 'notify') {
+            try{
+                $params = array(
+                    'DATA' => $request->getParam('DATA', ''),
+                    'SIGNATURE' => $request->getParam('SIGNATURE', '')
+                );
+                $url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
+                $response = $helper->process_url($url, $params);
+                list($status, $ret) = $helper->_splitResponseData($response);
+                if ($status != 'OK'){
+                    Mage::throwException($helper->__('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response));
+                } elseif ($order->getState() == 'pending_payment') {
+                    /** @var $payment Mage_Sales_Model_Order_Payment */
+                    $payment = $order->getPayment();
+                    $payment->setStatus(Saferpay_Ecommerce_Model_Abstract::STATUS_APPROVED);
+                    $data = $helper->_parseResponseXml($request->getParam('DATA'));
+                    while (list($key, $val) = each($data)) {
+                        $payment->setAdditionalInformation($key, $val);
+                    }
+                    if ($request->getParam('capture', '') == Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE){
+                        $params = array(
+                            'ACCOUNTID' => $helper->getSetting('saferpay_account_id'),
+                            'ID' => $ret['ID']
+                        );
+                        if($helper->getSetting('saferpay_password') != ''){
+                            $params['spPassword'] = $helper->getSetting('saferpay_password');
+                        }
+                        $url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
+                        $response = $helper->process_url($url, $params);
+                        list($status, $params) = $helper->_splitResponseData($response);
+                        if ($status == 'OK') {
+                            $params = $helper->_parseResponseXml($params);
+                            if (is_array($params) && isset($params['RESULT']) && $params['RESULT'] == 0){
+                                $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, $helper->__('Captured by SaferPay. Transaction ID: '.$ret['ID']));
+                                if (!$order->canInvoice()) {
+                                    Mage::throwException($helper->__('Can not create an invoice.'));
+                                }
+                                /** @var $invoice Mage_Sales_Model_Order_Invoice */
+                                $invoice = $order->prepareInvoice();
+                                $invoice->register()->capture();
+                                $order->addRelatedObject($invoice);
+                                $order->save();
+                            }
+                        }else{
+                            Mage::throwException($helper->__('PayComplete call failed. Result: "%s"', $response));
+                        }
+                    }else{
+                        $order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $helper->__('Authorized by SaferPay. Transaction ID: '.$ret['ID']))
+                            ->save();
+                    }
+                }
+            }catch (Mage_Core_Exception $e){
+                Mage::logException($e);
+                if($event == 'success'){
+                    $checkout_helper->sendPaymentFailedEmail($_session->getQuote(), $e->getMessage());
+                }
+                $_session->addError($e->getMessage());
+                return false;
+            }catch (Exception $e){
+                Mage::logException($e);
+                $checkout_helper->sendPaymentFailedEmail($_session->getQuote(), Mage::helper('saferpay')->__("An error occurred while processing the payment: %s", $e->getMessage()));
+                $_session->addError(Mage::helper('saferpay')->__('An error occurred while processing the payment, please contact the store owner for assistance.'));
+                return false;
+            }
+        } else {
+            $order->sendNewOrderEmail()
+                ->save();
+        }
+        return true;
+    }
+
+    public function _abortPayment($event, $order_id)
+    {
+        /** @var $_session Mage_Checkout_Model_Session */
+        $_session = Mage::getSingleton('checkout/session');
+        /** @var $helper Saferpay_Ecommerce_Helper_Data */
+        $helper = Mage::helper('saferpay');
+        try{
+            $message = $helper->__('Payment aborted with status "%s"', Mage::helper('saferpay')->__($event));
+            /** @var $order Mage_Sales_Model_Order */
+            $order = Mage::getModel('sales/order');
+            $order->loadByIncrementId($order_id);
+            $order->cancel();
+            $_session->addError($message);
+            /** @var $payment Mage_Sales_Model_Order_Payment */
+            $payment = $order->getPayment();
+            $payment->setStatus('canceled')
+                ->setIsTransactionClosed(1);
+            $order->setState('canceled', true, $message)
+                ->save();
+        }catch (Mage_Core_Exception $e){
+            Mage::logException($e);
+            $_session->addError($e->getMessage());
+        }catch (Exception $e){
+            Mage::logException($e);
+            Mage::helper('checkout')->sendPaymentFailedEmail($_session->getQuote(), $helper->__("An error occurred while processing the payment failure: %s", $e->getMessage()) . "\n");
+            $_session->addError($helper->__('An error occurred while processing the payment failure, please contact the store owner for assistance.'));
+        }
+
+    }
+
+    /**
      * Get order model
      *
      * @return Mage_Sales_Model_Order

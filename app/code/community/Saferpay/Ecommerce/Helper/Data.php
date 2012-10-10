@@ -81,7 +81,7 @@ class Saferpay_Ecommerce_Helper_Data extends Mage_Core_Helper_Abstract
 			 $params = explode('&', $params);
 			 $ret = array();
 			 foreach($params as $param){
-			  list($key, $val) = split('=', $param);
+			  list($key, $val) = explode('=', $param);
 			  if($key && $val){
 			   $ret[$key] = $val;
 			  }
