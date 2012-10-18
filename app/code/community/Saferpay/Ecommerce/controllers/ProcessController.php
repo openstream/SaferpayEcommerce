@@ -64,13 +64,18 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
     {
         if (is_null($this->_payment))
         {
-            $methodCode = Mage::getSingleton('checkout/session')->getSaferpayPaymentMethod();
-            $model = Mage::getStoreConfig('payment/' . $methodCode . '/model');
-            $this->_payment = Mage::getModel($model);
+            if ($methodCode = Mage::getSingleton('checkout/session')->getSaferpayPaymentMethod()) {
+                $model = Mage::getStoreConfig('payment/' . $methodCode . '/model');
+                $this->_payment = Mage::getModel($model);
+            } elseif ($order_id = $this->getRequest()->getParam('id')) {
+                /** @var $order Mage_Sales_Model_Order */
+                $order = Mage::getModel('sales/order')->loadByIncrementId($order_id);
+                $this->_payment = $order->getPayment()->getMethodInstance();
+            }
             if (! $this->_payment)
             {
                 Mage::throwException(
-                    $this->__('An error occurred while processing the payment: unable to recreate payment instance for method "%s"', $methodCode)
+                    $this->__('An error occurred while processing the payment: unable to recreate payment instance.')
                 );
             }
         }
