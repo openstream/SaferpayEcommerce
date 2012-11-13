@@ -55,7 +55,7 @@ class Saferpay_Ecommerce_ProcessController extends Mage_Core_Controller_Front_Ac
 	}
 
     /**
-     * Return an instance of the sayferpay payment method. In order to do so the
+     * Return an instance of the Saferpay payment method. In order to do so the
      * value saved on the customer session id checked.
      *
      * @return Saferpay_Ecommerce_Model_Abstract

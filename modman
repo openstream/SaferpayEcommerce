@@ -1,0 +1,6 @@
+app/code/community/Saferpay/Ecommerce                               app/code/community/Saferpay/Ecommerce
+app/design/adminhtml/default/default/template/saferpay/ecommerce    app/design/adminhtml/default/default/template/saferpay/ecommerce
+app/design/frontend/base/default/template/saferpay/ecommerce        app/design/frontend/base/default/template/saferpay/ecommerce
+app/etc/modules/Saferpay_Ecommerce.xml                              app/etc/modules/Saferpay_Ecommerce.xml
+app/locale/de_DE/Saferpay_Ecommerce.csv                             app/locale/de_DE/Saferpay_Ecommerce.csv
+app/locale/de_CH/Saferpay_Ecommerce.csv                             app/locale/de_CH/Saferpay_Ecommerce.csv
