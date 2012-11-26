@@ -21,32 +21,32 @@
 
 abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Method_Abstract
 {
-	/**
-	 * Payment Method Code
-	 *
-	 * @var string
-	 */
-	protected $_code = 'abstract';
+    /**
+     * Payment Method Code
+     *
+     * @var string
+     */
+    protected $_code = 'abstract';
 
-	protected $_formBlockType = 'saferpay/form';
-	protected $_infoBlockType = 'saferpay/info';
+    protected $_formBlockType = 'saferpay/form';
+    protected $_infoBlockType = 'saferpay/info';
 
-	/*
-	 * Availability options
-	 */
-	protected $_isGateway              = true;
-	protected $_canAuthorize           = true;
-	protected $_canCapture             = true;
-	protected $_canCapturePartial      = false;
-	protected $_canRefund              = false;
-	protected $_canVoid                = false;
-	protected $_canUseInternal         = false;
-	protected $_canUseCheckout         = true;
-	protected $_canUseForMultishipping = false;
+    /*
+     * Availability options
+     */
+    protected $_isGateway              = true;
+    protected $_canAuthorize           = true;
+    protected $_canCapture             = true;
+    protected $_canCapturePartial      = false;
+    protected $_canRefund              = false;
+    protected $_canVoid                = false;
+    protected $_canUseInternal         = false;
+    protected $_canUseCheckout         = true;
+    protected $_canUseForMultishipping = false;
 
     protected $_order;
-	
-	const STATE_AUTHORIZED = 'authorized';
+
+    const STATE_AUTHORIZED = 'authorized';
 
     /**
      * @param $event string
@@ -56,23 +56,12 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
     public function _processPayment($event, $request){
         /** @var $_session Mage_Checkout_Model_Session */
         $_session = Mage::getSingleton('checkout/session');
-        /** @var $helper Saferpay_Ecommerce_Helper_Data */
-        $helper = Mage::helper('saferpay');
+        $helper = $this->getHelper();
         /** @var $checkout_helper Mage_Checkout_Helper_Data */
         $checkout_helper = Mage::helper('checkout');
 
         try{
-            $params = array(
-                'DATA'      => $request->getParam('DATA', ''),
-                'SIGNATURE' => $request->getParam('SIGNATURE', '')
-            );
-            $url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
-            $response = $helper->process_url($url, $params);
-            list($status, $ret) = $helper->_splitResponseData($response);
-
-            if ($status != 'OK'){
-                Mage::throwException($helper->__('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response));
-            } else {
+            if ($transaction_id = $this->validateSignature($request)){
                 $order = $this->getOrder();
 
                 if ($event == 'notify') {
@@ -85,7 +74,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
                         if ($request->getParam('capture', '') == Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE){
                             $params = array(
                                 'ACCOUNTID' => $helper->getSetting('saferpay_account_id'),
-                                'ID' => $ret['ID']
+                                'ID' => $transaction_id
                             );
                             if($helper->getSetting('saferpay_password') != ''){
                                 $params['spPassword'] = $helper->getSetting('saferpay_password');
@@ -96,7 +85,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
                             if ($status == 'OK') {
                                 $params = $helper->_parseResponseXml($params);
                                 if (is_array($params) && isset($params['RESULT']) && $params['RESULT'] == 0){
-                                    $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, $helper->__('Captured by SaferPay. Transaction ID: '.$ret['ID']));
+                                    $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, $helper->__('Captured by SaferPay. Transaction ID: ' . $transaction_id));
                                     if (!$order->canInvoice()) {
                                         Mage::throwException($helper->__('Can not create an invoice.'));
                                     }
@@ -109,14 +98,15 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
                                 Mage::throwException($helper->__('PayComplete call failed. Result: "%s"', $response));
                             }
                         }else{
-                            $order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $helper->__('Authorized by SaferPay. Transaction ID: '.$ret['ID']))
+                            $order->setState(Saferpay_Ecommerce_Model_Abstract::STATE_AUTHORIZED, true, $helper->__('Authorized by SaferPay. Transaction ID: ' . $transaction_id))
                                 ->save();
                         }
                     }
                 } elseif ($event == 'success') {
-                    $order->sendNewOrderEmail()
-                        ->save();
+                    $order->sendNewOrderEmail();
                 }
+            } else {
+                Mage::throwException($helper->__('Signature invalid, possible manipulation detected!'));
             }
         }catch (Mage_Core_Exception $e){
             Mage::logException($e);
@@ -128,22 +118,39 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
         }catch (Exception $e){
             Mage::logException($e);
             if($event == 'success'){
-                $checkout_helper->sendPaymentFailedEmail($_session->getQuote(), Mage::helper('saferpay')->__("An error occurred while processing the payment: %s", $e->getMessage()));
-               $_session->addError(Mage::helper('saferpay')->__('An error occurred while processing the payment, please contact the store owner for assistance.'));
+                $checkout_helper->sendPaymentFailedEmail($_session->getQuote(), $helper->__("An error occurred while processing the payment: %s", $e->getMessage()));
+                $_session->addError($helper->__('An error occurred while processing the payment, please contact the store owner for assistance.'));
             }
             return false;
         }
         return true;
     }
 
+    /**
+     * @param $request Mage_Core_Controller_Request_Http
+     * @return int
+     */
+    private function validateSignature($request)
+    {
+        $helper = $this->getHelper();
+        $params = array(
+            'DATA'      => $request->getParam('DATA', ''),
+            'SIGNATURE' => $request->getParam('SIGNATURE', '')
+        );
+        $url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
+        $response = $helper->process_url($url, $params);
+        list($status, $ret) = $helper->_splitResponseData($response);
+
+        return $status == 'OK' ? $ret['ID'] : 0;
+    }
+
     public function _abortPayment($event, $order_id)
     {
         /** @var $_session Mage_Checkout_Model_Session */
         $_session = Mage::getSingleton('checkout/session');
-        /** @var $helper Saferpay_Ecommerce_Helper_Data */
-        $helper = Mage::helper('saferpay');
+        $helper = $this->getHelper();
         try{
-            $message = $helper->__('Payment aborted with status "%s"', Mage::helper('saferpay')->__($event));
+            $message = $helper->__('Payment aborted with status "%s"', $helper->__($event));
             /** @var $order Mage_Sales_Model_Order */
             $order = Mage::getModel('sales/order');
             $order->loadByIncrementId($order_id);
@@ -174,202 +181,199 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
     public function getOrder()
     {
         if (!$this->_order) {
-			try{
-				$this->_order = $this->getInfoInstance()->getOrder();
-				if (! $this->_order)
-				{
-					$orderId = $this->getSession()->getQuote()->getReservedOrderId();
+            try{
+                $this->_order = $this->getInfoInstance()->getOrder();
+                if (! $this->_order)
+                {
+                    $orderId = $this->getSession()->getQuote()->getReservedOrderId();
                     /** @var $order Mage_Sales_Model_Order */
-					$order = Mage::getModel('sales/order');
-					$order->loadByIncrementId($orderId);
-					if ($order->getId())
-					{
-						$this->_order = $order;
-					}
-				}
-			}catch(Exception $e){
-				$id = $this->getSession()->getLastOrderId();
-				$this->_order = Mage::getModel('sales/order')->load($id);
-			}
+                    $order = Mage::getModel('sales/order');
+                    $order->loadByIncrementId($orderId);
+                    if ($order->getId())
+                    {
+                        $this->_order = $order;
+                    }
+                }
+            }catch(Exception $e){
+                $id = $this->getSession()->getLastOrderId();
+                $this->_order = Mage::getModel('sales/order')->load($id);
+            }
         }
         return $this->_order;
     }
 
-	/**
-	 *
-	 * @return Mage_Checkout_Model_Session
-	 */
-	public function getSession()
-	{
-		return Mage::getSingleton('checkout/session');
-	}
+    /**
+     *
+     * @return Mage_Checkout_Model_Session
+     */
+    public function getSession()
+    {
+        return Mage::getSingleton('checkout/session');
+    }
 
-	/**
-	 * Return the payment provider id
-	 *
-	 * @return string
-	 */
-	public function getProviderId()
-	{
-		$id = str_replace(' ', '', (string) $this->getConfigData('provider_id'));
-		return $id;
-	}
-	
-	/**
-	 * Return url for redirection after order placed
-	 *
-	 * @return string
-	 */
-	public function getOrderPlaceRedirectUrl()
-	{
-        /** @var $helper Saferpay_Ecommerce_Helper_Data */
-        $helper = Mage::helper('saferpay');
-		$url = $helper->process_url($helper->getSetting('payinit_base_url'), $this->getPayInitFields());
-		if(preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $url)){
-			return $url;
-		}else{
-			$this->getSession()->addError($helper->__('An error occurred while processing the payment failure, please contact the store owner for assistance.'));
-			return Mage::getUrl('checkout/cart');
-		}
-	}
+    /**
+     * Return the payment provider id
+     *
+     * @return string
+     */
+    public function getProviderId()
+    {
+        $id = str_replace(' ', '', (string) $this->getConfigData('provider_id'));
+        return $id;
+    }
 
-	/**
-	 * Capture payment through saferpay
-	 *
-	 * @param Varien_Object $payment
-	 * @param float $amount
-	 * @return Saferpay_Ecommerce_Model_Abstract
-	 */
-	public function capture(Varien_Object $payment, $amount)
-	{
-		$payment->setStatus(self::STATUS_APPROVED)
-			->setTransactionId($this->getTransactionId())
-			->setIsTransactionClosed(0);
+    /**
+     * Return url for redirection after order placed
+     *
+     * @return string
+     */
+    public function getOrderPlaceRedirectUrl()
+    {
+        $helper = $this->getHelper();
+        $url = $helper->process_url($helper->getSetting('payinit_base_url'), $this->getPayInitFields());
+        if(preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $url)){
+            return $url;
+        }else{
+            $this->getSession()->addError($helper->__('An error occurred while processing the payment failure, please contact the store owner for assistance.'));
+            return Mage::getUrl('checkout/cart');
+        }
+    }
 
-		return $this;
-	}
+    /**
+     * Capture payment through saferpay
+     *
+     * @param Varien_Object $payment
+     * @param float $amount
+     * @return Saferpay_Ecommerce_Model_Abstract
+     */
+    public function capture(Varien_Object $payment, $amount)
+    {
+        $payment->setStatus(self::STATUS_APPROVED)
+            ->setTransactionId($this->getTransactionId())
+            ->setIsTransactionClosed(0);
 
-	/**
-	 * Cancel payment
-	 *
-	 * @param Varien_Object $payment
-	 * @return Saferpay_Ecommerce_Model_Abstract
-	 */
-	public function cancel(Varien_Object $payment)
-	{
-		$payment->setStatus(self::STATUS_DECLINED)
-			->setTransactionId($this->getTransactionId())
-			->setIsTransactionClosed(1);
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * Cancel payment
+     *
+     * @param Varien_Object $payment
+     * @return Saferpay_Ecommerce_Model_Abstract
+     */
+    public function cancel(Varien_Object $payment)
+    {
+        $payment->setStatus(self::STATUS_DECLINED)
+            ->setTransactionId($this->getTransactionId())
+            ->setIsTransactionClosed(1);
 
-	/**
-	 * Prepare params array to send it to gateway
-	 *
-	 * @return array
-	 */
-	public function getPayInitFields()
-	{
-        /** @var $helper Saferpay_Ecommerce_Helper_Data */
-        $helper = Mage::helper('saferpay');
+        return $this;
+    }
+
+    /**
+     * Prepare params array to send it to gateway
+     *
+     * @return array
+     */
+    public function getPayInitFields()
+    {
+        $helper = $this->getHelper();
         $orderId = $this->getOrder()->getRealOrderId();
 
-		$params = array(
-			'ACCOUNTID'             => $helper->getSetting('saferpay_account_id'),
-			'AMOUNT'                => intval($helper->round($this->getOrder()->getGrandTotal(), 2) * 100),
-			'CURRENCY'              => $this->getOrder()->getOrderCurrencyCode(),
-			'DESCRIPTION'           => $this->getOrder()->getStore()->getWebsite()->getName(),
-			'CCCVC'                 => 'yes',
-			'CCNAME'                => 'yes',
-			'ORDERID'               => $orderId,
-			'SUCCESSLINK'           => Mage::getUrl('saferpay/process/success', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
-			'BACKLINK'              => Mage::getUrl('saferpay/process/back', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
-			'FAILLINK'              => Mage::getUrl('saferpay/process/fail', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
-			'NOTIFYURL'             => Mage::getUrl('saferpay/process/notify', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
-			'AUTOCLOSE'             => 0,
-			'PROVIDERSET'           => $this->getProviderId(),
-			'LANGID'                => $this->getLangId(),
-			'SHOWLANGUAGES'         => $this->getUseDefaultLangId() ? 'yes' : 'no',
-			'DELIVERY'				=> 'no',
-			'VTCONFIG'				=> $helper->getSetting('vtconfig')
-		);
+        $params = array(
+            'ACCOUNTID'             => $helper->getSetting('saferpay_account_id'),
+            'AMOUNT'                => intval($helper->round($this->getOrder()->getGrandTotal(), 2) * 100),
+            'CURRENCY'              => $this->getOrder()->getOrderCurrencyCode(),
+            'DESCRIPTION'           => $this->getOrder()->getStore()->getWebsite()->getName(),
+            'CCCVC'                 => 'yes',
+            'CCNAME'                => 'yes',
+            'ORDERID'               => $orderId,
+            'SUCCESSLINK'           => Mage::getUrl('saferpay/process/success', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
+            'BACKLINK'              => Mage::getUrl('saferpay/process/back', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
+            'FAILLINK'              => Mage::getUrl('saferpay/process/fail', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
+            'NOTIFYURL'             => Mage::getUrl('saferpay/process/notify', array('id' => $orderId, 'capture' => $this->getConfigData('payment_action'))),
+            'AUTOCLOSE'             => 0,
+            'PROVIDERSET'           => $this->getProviderId(),
+            'LANGID'                => $this->getLangId(),
+            'SHOWLANGUAGES'         => $this->getUseDefaultLangId() ? 'yes' : 'no',
+            'DELIVERY'				=> 'no',
+            'VTCONFIG'				=> $helper->getSetting('vtconfig')
+        );
 
-		return $params;
-	}
+        return $params;
+    }
 
-	/**
-	 * Return the language to use in the saferpay terminal
-	 *
-	 * @param string
-	 * @return string
-	 */
-	protected function getLangId($lang = null)
-	{
-		try
-		{
-			if (is_null($lang))
-			{
-				$lang = $this->_getOrderLang();
-			}
-			if ($lang)
-			{
-				if ($xml = $this->_getLangIdsXml())
-				{
-					$nodes = $xml->xpath("//LANGUAGE[@CODE='{$lang}']");
-					foreach ($nodes as $node)
-					{
-						return (string) $node['CODE'];
-					}
-				}
-			}
-		}
-		catch (Exception $e)
-		{
-			Mage::logException($e);
-		}
+    /**
+     * Return the language to use in the saferpay terminal
+     *
+     * @param string
+     * @return string
+     */
+    protected function getLangId($lang = null)
+    {
+        try
+        {
+            if (is_null($lang))
+            {
+                $lang = $this->_getOrderLang();
+            }
+            if ($lang)
+            {
+                if ($xml = $this->_getLangIdsXml())
+                {
+                    $nodes = $xml->xpath("//LANGUAGE[@CODE='{$lang}']");
+                    foreach ($nodes as $node)
+                    {
+                        return (string) $node['CODE'];
+                    }
+                }
+            }
+        }
+        catch (Exception $e)
+        {
+            Mage::logException($e);
+        }
 
-		$this->setUseDefaultLangId(true);
-		return Mage::helper('saferpay')->getSetting('default_lang_id');
-	}
+        $this->setUseDefaultLangId(true);
+        return $this->getHelper()->getSetting('default_lang_id');
+    }
 
-	protected function _getOrderLang()
-	{
-		$orderLocale = $locale = Mage::getStoreConfig('general/locale/code', $this->getOrder()->getStoreId());
-		$lang = strtolower(substr($orderLocale, 0, 2));
-		return $lang;
-	}
+    protected function _getOrderLang()
+    {
+        $orderLocale = $locale = Mage::getStoreConfig('general/locale/code', $this->getOrder()->getStoreId());
+        $lang = strtolower(substr($orderLocale, 0, 2));
+        return $lang;
+    }
 
-	/**
-	 * Return the available language id's from the saferpay API
-	 *
-	 * @return SimpleXMLElement
-	 */
-	protected function _getLangIdsXml()
-	{
-		$langIds = $this->getData('lang_ids_xml');
-		if (is_null($langIds))
-		{
-            /** @var $helper Saferpay_Ecommerce_Helper_Data */
-            $helper = Mage::helper('saferpay');
-			$url = $helper->getSetting('language_ids_url');
-			if ($langIds = new SimpleXMLElement($helper->process_url($url)))
-			{
-				$this->setLangIdsXml($langIds);
-			}
-		}
-		return $langIds;
-	}
+    /**
+     * Return the available language id's from the saferpay API
+     *
+     * @return SimpleXMLElement
+     */
+    protected function _getLangIdsXml()
+    {
+        $langIds = $this->getData('lang_ids_xml');
+        if (is_null($langIds))
+        {
+            $helper = $this->getHelper();
+            $url = $helper->getSetting('language_ids_url');
+            if ($langIds = new SimpleXMLElement($helper->process_url($url)))
+            {
+                $this->setLangIdsXml($langIds);
+            }
+        }
+        return $langIds;
+    }
 
-	/**
-	 * Get initialized flag status
-	 *
-	 * @return boolean
-	 */
-	public function isInitializeNeeded()
-	{
-		return true;
-	}
+    /**
+     * Get initialized flag status
+     *
+     * @return boolean
+     */
+    public function isInitializeNeeded()
+    {
+        return true;
+    }
 
     /**
      * Instantiate state and set it to state object
@@ -379,25 +383,33 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
      * @return void
      */
     public function initialize($paymentAction, $stateObject)
-	{
-		$stateObject->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
-		$stateObject->setStatus(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
-		$stateObject->setIsNotified(false);
-		$this->getSession()->setSaferpayPaymentMethod($this->getCode());
-	}
+    {
+        $stateObject->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
+        $stateObject->setStatus(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
+        $stateObject->setIsNotified(false);
+        $this->getSession()->setSaferpayPaymentMethod($this->getCode());
+    }
 
-	/**
-	 * Throw an exception with a default error message if none is specified
-	 *
-	 * @param string $msg
-	 * @param array $params
-	 */
-	protected function _throwException($msg = null, $params = null)
-	{
-		if (is_null($msg))
-		{
-			$msg = $this->getConfigData('generic_error_msg');
-		}
-		Mage::throwException(Mage::helper('saferpay')->__($msg, $params));
-	}
+    /**
+     * Throw an exception with a default error message if none is specified
+     *
+     * @param string $msg
+     * @param array $params
+     */
+    protected function _throwException($msg = null, $params = null)
+    {
+        if (is_null($msg))
+        {
+            $msg = $this->getConfigData('generic_error_msg');
+        }
+        Mage::throwException($this->getHelper()->__($msg, $params));
+    }
+
+    /**
+     * @return Saferpay_Ecommerce_Helper_Data
+     */
+    private function getHelper()
+    {
+        return Mage::helper('saferpay');
+    }
 }

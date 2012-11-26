@@ -52,7 +52,7 @@
 "Payment aborted with status ""%s""","Zahlung abgebrochen mit Status ""%s"""
 "An error occurred while processing the payment failure: %s","Ein Fehler trat während der Zahlungsverarbeitung auf: %s"
 "An error occurred while processing the payment failure, please contact the store owner for assistance.","Ein Fehler trat während der Zahlungsverarbeitung auf, bitte kontaktieren Sie den Shop Eigentümer für Hilfe."
-"Signature invalid, possible manipulation detected! Validation Result: ""%s""","Ungültige Signatur, mögliche Manipulation entdeckt! Validierungsergebnis: ""%s"""
+"Signature invalid, possible manipulation detected!","Ungültige Signatur, mögliche Manipulation entdeckt!"
 "Can not create an invoice.","Rechnung kann nicht erstellt werden."
 "PayComplete call failed. Result: ""%s""","PayComplete Aufruf fehlgeschlagen. Ergebnis: ""%s"""
 "Authorized by SaferPay. Transaction ID: ","Authorisiert durch SaferPay. Transaktions ID: "
