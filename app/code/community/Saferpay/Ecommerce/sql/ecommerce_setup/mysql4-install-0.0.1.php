@@ -4,7 +4,7 @@ $magentoVersion = Mage::getVersionInfo();
 $is_enterprise = Mage::helper('core')->isModuleEnabled('Enterprise_Enterprise');
 
 if(($is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] < 10) ||
-    (!$is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] < 5)) {
+    (!$is_enterprise && $magentoVersion['major'] >= 1 && $magentoVersion['minor'] > 5)) {
 
     // Installer is not needed for versions older then CE 1.5.0.0 or EE 1.10.0.0
 
