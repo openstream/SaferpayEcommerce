@@ -282,7 +282,7 @@ abstract class Saferpay_Ecommerce_Model_Abstract extends Mage_Payment_Model_Meth
 
         $params = array(
             'ACCOUNTID'             => $helper->getSetting('saferpay_account_id'),
-            'AMOUNT'                => intval($helper->round($this->getOrder()->getGrandTotal(), 2) * 100),
+            'AMOUNT'                => intval(round($helper->round($this->getOrder()->getGrandTotal(), 2) * 100)),
             'CURRENCY'              => $this->getOrder()->getOrderCurrencyCode(),
             'DESCRIPTION'           => $this->getOrder()->getStore()->getWebsite()->getName(),
             'CCCVC'                 => 'yes',
