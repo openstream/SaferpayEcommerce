@@ -11,7 +11,6 @@ if(($is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] <
 } else {
 
     $installer = $this;
-    $installer->startSetup();
 
     $statusTable        = $installer->getTable('sales/order_status');
     $statusStateTable   = $installer->getTable('sales/order_status_state');
@@ -32,6 +31,4 @@ if(($is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] <
         );
         $installer->getConnection()->insertArray($statusStateTable, array('status', 'state', 'is_default'), $data);
     }
-    
-    $installer->endSetup();
 }
