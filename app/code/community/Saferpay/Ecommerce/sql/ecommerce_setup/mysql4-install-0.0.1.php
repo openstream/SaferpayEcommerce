@@ -11,18 +11,27 @@ if(($is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] <
 } else {
 
     $installer = $this;
+    $installer->startSetup();
 
     $statusTable        = $installer->getTable('sales/order_status');
     $statusStateTable   = $installer->getTable('sales/order_status_state');
-    $statusLabelTable   = $installer->getTable('sales/order_status_label');
 
-    $data = array(
-        array('status' => 'authorized', 'label' => 'Authorized Payment')
-    );
-    $installer->getConnection()->insertArray($statusTable, array('status', 'label'), $data);
-
-    $data = array(
-        array('status' => 'authorized', 'state' => 'authorized', 'is_default' => 1)
-    );
-    $installer->getConnection()->insertArray($statusStateTable, array('status', 'state', 'is_default'), $data);
+    // check for existing authorized status
+    $status = $installer->getConnection()->fetchOne($installer->getConnection()->select()
+            ->from($statusTable, 'status')
+            ->where('status = ?', 'authorized'));
+    
+    if (!$status) {
+        $data = array(
+            array('status' => 'authorized', 'label' => 'Authorized Payment'),
+        );
+        $installer->getConnection()->insertArray($statusTable, array('status', 'label'), $data);
+        
+        $data = array(
+            array('status' => 'authorized', 'state' => 'authorized', 'is_default' => 1),
+        );
+        $installer->getConnection()->insertArray($statusStateTable, array('status', 'state', 'is_default'), $data);
+    }
+    
+    $installer->endSetup();
 }
